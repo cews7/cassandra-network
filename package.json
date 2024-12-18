@@ -1,0 +1,10 @@
+{
+  "name": "cassandra-network",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --parallel dev",
+    "build": "pnpm --parallel build",
+    "lint": "pnpm --parallel lint"
+  }
+}

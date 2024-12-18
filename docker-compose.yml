@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:14.15-alpine3.21
+    restart: always
+    environment:
+      POSTGRES_USER: cassandra
+      POSTGRES_PASSWORD: cassandra
+      POSTGRES_DB: cassandra
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:
