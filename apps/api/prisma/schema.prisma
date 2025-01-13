@@ -1,17 +1,193 @@
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
+// This is your Prisma schema file
 
 generator client {
   provider = "prisma-client-js"
 }
 
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TimeFrame {
+  IMMEDIATE    // 0-14 days
+  NEAR         // 15-45 days
+  MEDIUM       // 46-180 days
+  LONG         // 181-365 days
+}
+
+enum PredictionStatus {
+  ACTIVE
+  VALIDATED
+  FAILED
+}
+
+enum NotificationType {
+  PATTERN_EMERGING          // Multiple related predictions detected
+  PREDICTION_VALIDATED      // Prediction has occurred
+  HIGH_QUALITY_ANALYSIS     // Valuable comment/analysis posted
+  CRITICAL_SIGNAL           // High-priority pattern alert
+}
+
+enum Role {
+  ADMIN
+  SEER
+}
+
+model User {
+  id                 String         @id @default(cuid())
+  email              String         @unique
+  provider           String?        // Google, Apple, etc.  
+  providerId         String?        // ID from provider
+  role               Role           @default(SEER)
+  predictions        Prediction[]
+  comments           Comment[]      // Added for Seer comments
+  votes              Vote[]         // Added for Seer voting
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  totalPredictions   Int            @default(0)
+  correctPredictions Int            @default(0)
+  
+  // Private reputation tracking
+  accuracyScore      Float          @default(0)  // Based on correct predictions with range 0-1
+  insightScore       Float          @default(0)  // Based on valuable comments/analysis with range 0-1
+  
+  // Notifications
+  notifications      Notification[]
+}
+
 model Prediction {
-  id           String   @id @default(cuid())
-  content      String
-  expectedDate DateTime
-  status       String   @default("pending")
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-} 
+  id              String           @id @default(cuid())
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  title           String
+  text            String
+  timeframe       TimeFrame
+  dueDate         DateTime?        
+  status          PredictionStatus @default(ACTIVE)
+  region          String?
+  tags            String[]
+  evidence        String?
+  validatedAt     DateTime?
+
+  // Engagement features
+  comments        Comment[]        // Analysis-focused comments
+  votes           Vote[]           // Quality assessment votes
+  
+  // Search optimization
+  searchableText  String?
+  elasticSearchId String?
+  
+  // Categorization
+  category        Category?        @relation(fields: [categoryId], references: [id])
+  categoryId      String?
+  
+  // Relations
+  userId          String
+  user            User             @relation(fields: [userId], references: [id])
+  patternId       String?
+  pattern         Pattern?         @relation(fields: [patternId], references: [id])
+  
+  @@index([status, timeframe])
+  @@index([categoryId])
+  @@index([userId])
+  @@index([patternId])
+}
+
+model Comment {
+  id            String     @id @default(cuid())
+  text          String
+  analysis      String     // Required analysis/evidence field
+  userId        String
+  predictionId  String
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  
+  user          User       @relation(fields: [userId], references: [id])
+  prediction    Prediction @relation(fields: [predictionId], references: [id])
+  
+  @@index([predictionId])
+}
+
+enum VoteType {
+  STRONG_SIGNAL
+  WEAK_SIGNAL
+  NEEDS_EVIDENCE
+}
+
+model Vote {
+  id            String     @id @default(cuid())
+  type          VoteType
+  reasoning     String     // Required reasoning for vote
+  userId        String
+  predictionId  String
+  createdAt     DateTime   @default(now())
+  
+  user          User       @relation(fields: [userId], references: [id])
+  prediction    Prediction @relation(fields: [predictionId], references: [id])
+  
+  // weighted vote
+  weight        Float      @default(1)
+  @@unique([userId, predictionId])
+}
+
+model Notification {
+  id          String           @id @default(cuid())
+  userId      String
+  type        NotificationType
+  read        Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+  metadata    Json?            // Flexible storage for notification data
+  
+  user        User             @relation(fields: [userId], references: [id])
+  
+  @@index([userId, read, createdAt])
+}
+
+model Category {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  description String?
+  predictions Prediction[]
+  patterns    Pattern[]
+  
+  parentId    String?
+  parent      Category?    @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[]   @relation("CategoryHierarchy")
+  
+  @@index([name])
+}
+
+model Pattern {
+  id                  String       @id @default(cuid())
+  name                String       @unique
+  description         String?
+  timeframe           TimeFrame
+  isActive           Boolean      @default(true)
+  
+  // Search optimization
+  searchableText     String?
+  elasticSearchId    String?
+  
+  // Categorization
+  category           Category?    @relation(fields: [categoryId], references: [id])
+  categoryId         String?
+  
+  // Track record
+  totalPredictions    Int        @default(0)
+  validatedPredictions Int       @default(0)
+  
+  // Relations
+  predictions        Prediction[]
+  
+  @@index([timeframe, isActive])
+  @@index([categoryId])
+}
+
+model Invite {
+  id        String    @id @default(cuid())
+  code      String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+}
