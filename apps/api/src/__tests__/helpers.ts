@@ -1,6 +1,8 @@
 import { build } from '../app'
 import { FastifyInstance } from 'fastify'
+import { PrismaClient } from '@prisma/client'
 
+const prisma = new PrismaClient()
 export async function createTestServer(): Promise<FastifyInstance> {
   const app = await build({ testing: true })
   return app
@@ -15,3 +17,7 @@ export async function closeTestServer(app: FastifyInstance): Promise<void> {
     console.error('Error closing test server:', err)
   }
 } 
+
+export async function cleanDatabase() {
+  await prisma.user.deleteMany()
+}

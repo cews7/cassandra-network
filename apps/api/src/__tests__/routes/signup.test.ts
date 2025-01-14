@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify'
-import { createTestServer, closeTestServer } from '../helpers'
+import { createTestServer, closeTestServer, cleanDatabase } from '../helpers'
 import { InviteService } from '../../services/inviteService'
 import { SignupService } from '../../services/signupService'
 
@@ -55,6 +55,7 @@ describe('Signup Routes', () => {
 
   afterEach(async () => {
     await closeTestServer(app)
+    await cleanDatabase()
   })
 
   it('should create a new user with valid invite code', async () => {
