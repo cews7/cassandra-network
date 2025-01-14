@@ -9,6 +9,7 @@ dist
 
 # ENV files
 .env
+.envrc
 .env.*
 !.env.example
 
