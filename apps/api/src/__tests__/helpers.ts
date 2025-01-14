@@ -1,10 +1,10 @@
-import { build } from '../app'
+import { buildApp } from '../app'
 import { FastifyInstance } from 'fastify'
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 export async function createTestServer(): Promise<FastifyInstance> {
-  const app = await build({ testing: true })
+  const app = await buildApp({ testing: true })
   return app
 }
 
