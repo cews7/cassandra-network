@@ -15,22 +15,22 @@ const appRouter = router({
 export type AppRouter = typeof appRouter
 
 export async function buildApp(opts: { testing: boolean } = { testing: false }) {
-  const fastify = Fastify({
+  const server = Fastify({
     logger: opts.testing ? false : true
   })
   
-  await fastify.register(supabasePlugin)
-  await fastify.register(signupRoutes)
-  await fastify.register(fastifyCors, {
+  await server.register(supabasePlugin)
+  await server.register(signupRoutes)
+  await server.register(fastifyCors, {
     origin: true
   })
 
   // Register tRPC
-  await fastify.register(fastifyTRPCPlugin, {
+  await server.register(fastifyTRPCPlugin, {
     prefix: '/trpc',
     trpcOptions: { router: appRouter }
   })
   
-  return fastify
+  return server
 }
   
