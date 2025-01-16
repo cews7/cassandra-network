@@ -1,4 +1,4 @@
-import { buildApp } from '../app'
+import { buildApp } from '../server'
 import { FastifyInstance } from 'fastify'
 import { PrismaClient } from '@prisma/client'
 

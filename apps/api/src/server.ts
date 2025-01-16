@@ -1,12 +1,10 @@
 import Fastify from 'fastify'
 import fastifyCors from '@fastify/cors'
 import { fastifyTRPCPlugin } from '@trpc/server/adapters/fastify'
-import { router } from './trpc'
-import { signupRoutes } from './routes/signup'
+import { router, createContext } from './trpc'
 import { predictionsRouter } from './routes/predictions'
-import supabasePlugin from './plugins/supabase'
 
-// Create main router
+// Create main tRPC router
 const appRouter = router({
   predictions: predictionsRouter,
 })
@@ -19,8 +17,6 @@ export async function buildApp(opts: { testing: boolean } = { testing: false }) 
     logger: opts.testing ? false : true
   })
   
-  await server.register(supabasePlugin)
-  await server.register(signupRoutes)
   await server.register(fastifyCors, {
     origin: true
   })
@@ -28,9 +24,12 @@ export async function buildApp(opts: { testing: boolean } = { testing: false }) 
   // Register tRPC
   await server.register(fastifyTRPCPlugin, {
     prefix: '/trpc',
-    trpcOptions: { router: appRouter }
+    trpcOptions: { 
+      router: appRouter,
+      createContext,
+    }
   })
-  
+
   return server
 }
   

@@ -1,4 +1,4 @@
-import { buildApp } from "./app"
+import { buildApp } from "./server"
 
 const start = async () => {
   try {
