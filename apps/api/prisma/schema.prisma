@@ -37,7 +37,7 @@ enum Role {
 model User {
   id                 String         @id @default(cuid())
   email              String         @unique
-  provider           String?        // Google, Apple, etc.  
+  provider           String?        // Google, Apple, Supabase, etc.  
   providerId         String?        // ID from provider
   role               Role           @default(SEER)
   predictions        Prediction[]
@@ -54,6 +54,10 @@ model User {
   
   // Notifications
   notifications      Notification[]
+
+  // Invite tracking
+  createdInvites     Invite[] @relation("CreatedInvites")
+  usedInvites        Invite[] @relation("UsedInvites")
 }
 
 model Prediction {
@@ -190,4 +194,11 @@ model Invite {
   expiresAt DateTime
   usedAt    DateTime?
   createdAt DateTime  @default(now())
+  createdBy User?      @relation("CreatedInvites", fields: [createdById], references: [id])
+  createdById String?
+  usedBy    User?     @relation("UsedInvites", fields: [usedById], references: [id])
+  usedById  String?
+
+  @@index([createdById])
+  @@index([usedById])
 }
