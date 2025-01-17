@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { trpc } from '~/src/utils/trpc'
+import { client } from '~/src/client'
 import PredictionCard from './PredictionCard.vue'
 import type { Prediction } from '~/src/types/interfaces'
 
@@ -10,7 +10,7 @@ const error = ref<string | null>(null)
 
 onMounted(async () => {
   try {
-    predictions.value = await trpc.predictions.list.query()
+    predictions.value = await client.predictions.list.query()
   } catch (err: any) {
     console.error('Failed to fetch predictions:', err)
     error.value = err.message || 'Failed to load predictions'

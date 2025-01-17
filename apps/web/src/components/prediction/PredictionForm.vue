@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { trpc } from '~/src/utils/trpc'
+import { client } from '~/src/client'
 
 const content = ref('')
 const expectedDate = ref('')
@@ -11,9 +11,12 @@ async function submitPrediction() {
   
   loading.value = true
   try {
-    await trpc.predictions.create.mutate({
-      content: content.value,
-      expectedDate: expectedDate.value
+    await client.predictions.create.mutate({
+      title: content.value,
+      text: expectedDate.value,
+      timeframe: "IMMEDIATE",
+      dueDate: expectedDate.value,
+      userId: "1"
     })
     content.value = ''
     expectedDate.value = ''

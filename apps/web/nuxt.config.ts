@@ -21,8 +21,9 @@ export default defineNuxtConfig({
     },
   },
   runtimeConfig: {
+    apiUrl: process.env.NUXT_API_URL || 'http://api:3001/trpc',
     public: {
-      apiBase: process.env.API_BASE || 'http://localhost:3001'
+      apiUrl: process.env.NUXT_PUBLIC_API_URL || 'http://localhost:3001/trpc'
     }
   },
   build: {
