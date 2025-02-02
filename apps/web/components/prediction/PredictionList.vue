@@ -1,20 +1,20 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import type { Prediction } from '~/types/interfaces'
+import type { Prediction } from '~/types/api/prediction.types'
 import PredictionCard from './PredictionCard.vue'
-import { useClient } from '~/composables/useClient'
+import { usePredictionService } from '~/services/predictionService'
 
 const predictions = ref<Prediction[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
-const client = useClient()
+const predictionService = usePredictionService()
 
 onMounted(async () => {
   try {
-    predictions.value = await client.predictions.list.query()
+    predictions.value = await predictionService.listPredictions()
   } catch (err: any) {
     console.error('Failed to fetch predictions:', err)
-    error.value = err.message || 'Failed to load predictions'
+    error.value = err.message
   } finally {
     loading.value = false
   }

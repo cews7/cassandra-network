@@ -7,6 +7,6 @@ export interface Prediction {
   status: 'ACTIVE' | 'VALIDATED' | 'FAILED'
   userId: string
   createdAt: string
-  updatedAt: string
+  updatedAt: string | null
   patternId: string | null
 } 
