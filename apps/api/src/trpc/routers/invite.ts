@@ -11,7 +11,7 @@ export const inviteRouter = router({
       createdAt: z.coerce.date(),
       expiresAt: z.coerce.date(),
     }))
-    .mutation(async ({ input, ctx }) => {
+    .mutation(async ({ input }) => {
       try {
         const invite = await prisma.invite.create({
           data: {
@@ -37,6 +37,7 @@ export const inviteRouter = router({
     .input(z.object({
       code: z.string()
     }))
+
     .query(async ({ input }) => {
       console.log('Received validate request for code:', input.code)
       try {

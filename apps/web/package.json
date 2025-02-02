@@ -15,12 +15,15 @@
     "@vueuse/core": "^12.0.0",
     "@vueuse/nuxt": "^12.0.0",
     "nanoid": "^3.3.4",
+    "node-fetch": "^3.3.2",
     "nuxt": "^3.14.1592",
+    "trpc-nuxt": "^0.10.22",
     "vue": "latest",
     "vue-router": "latest"
   },
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^6.12.2",
+    "@types/node-fetch": "^2.6.12",
     "autoprefixer": "^10.4.20",
     "nuxt-icon": "1.0.0-beta.7",
     "postcss": "^8.4.49",

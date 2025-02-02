@@ -1,17 +1,18 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { client } from '~/src/client'
+import { useNuxtApp } from '#app'
 
 const content = ref('')
 const expectedDate = ref('')
 const loading = ref(false)
+const { $trpc } = useNuxtApp()
 
 async function submitPrediction() {
   if (!content.value || !expectedDate.value) return
   
   loading.value = true
   try {
-    await client.predictions.create.mutate({
+    await $trpc.predictions.create.mutate({
       title: content.value,
       text: expectedDate.value,
       timeframe: "IMMEDIATE",

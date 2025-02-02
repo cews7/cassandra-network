@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import PredictionForm from '~/src/components/prediction/PredictionForm.vue'
-import PredictionList from '~/src/components/prediction/PredictionList.vue'
+import PredictionForm from '~/components/prediction/PredictionForm.vue'
+import PredictionList from '~/components/prediction/PredictionList.vue'
 </script>
 
 <template>

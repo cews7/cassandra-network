@@ -12,17 +12,14 @@ export class SignupService {
   ) {}
 
   async registerWithInvite(email: string, password: string, inviteCode: string) {
-    // 1. Validate invite first
-    await this.inviteService.validateInvite(inviteCode)
-
-    // 2. Create Supabase auth user
+    // 1. Create Supabase auth user
     const { data: authData, error } = await this.supabase.auth.signUp({
       email,
       password
     })
     if (error) throw error
 
-    // 3. Create user in our database
+    // 2. Create user in our database
     const userId = nanoid()
     const user = await prisma.user.create({
       data: {

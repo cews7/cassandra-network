@@ -1,12 +1,12 @@
 import Fastify from 'fastify'
 import fastifyCors from '@fastify/cors'
 import { fastifyTRPCPlugin } from '@trpc/server/adapters/fastify'
-import { router, createContext } from './trpc'
-import { predictionsRouter } from './routes/predictions'
-import { inviteRouter } from './routes/invite'
+import { router } from './trpc/trpc'
+import { predictionsRouter } from './trpc/routers/predictions'
+import { inviteRouter } from './trpc/routers/invite'
 
 // Create main tRPC router
-const appRouter = router({
+export const appRouter = router({
   predictions: predictionsRouter,
   invite: inviteRouter,
 })
@@ -37,7 +37,6 @@ export async function buildApp(opts: { testing: boolean } = { testing: false }) 
     prefix: '/trpc',
     trpcOptions: { 
       router: appRouter,
-      createContext,
     }
   })
 

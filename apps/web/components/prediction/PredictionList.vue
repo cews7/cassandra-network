@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { client } from '~/src/client'
+import type { Prediction } from '~/types/interfaces'
 import PredictionCard from './PredictionCard.vue'
-import type { Prediction } from '~/src/types/interfaces'
+import { useClient } from '~/composables/useClient'
 
 const predictions = ref<Prediction[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
+const client = useClient()
 
 onMounted(async () => {
   try {
